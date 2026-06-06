@@ -1,0 +1,33 @@
+name: Java CI
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Compile Java files
+        run: javac src/*.java
+
+      - name: Compile test files
+        run: |
+          mkdir -p out
+          javac -cp "src:/usr/share/java/junit4.jar" -d out src/*.java test/*.java
+
+      - name: Run JUnit tests
+        run: |
+          java -cp "out:/usr/share/java/junit4.jar:/usr/share/java/hamcrest-core.jar" org.junit.runner.JUnitCore LoginTest MessageTest MessageManagerTest
